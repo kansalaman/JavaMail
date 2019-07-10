@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -23,11 +24,16 @@ public class SendMail{
         props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
 //        props.setProperty("mail.smtp.socketFactory.port","amankansal.india@gmail.com");
 //        props.setProperty("mail.password","hahahaha");
-
+//        System.out.println("Enter your password here: ");
+//        Scanner scanner=new
+//        Console console=System.console();
+//        String password=new String(console.readPassword("Enter your password here: "));
+        Scanner scanner=new Scanner(System.in);
+        String password=scanner.nextLine();
         Session session=Session.getDefaultInstance(props,
                 new javax.mail.Authenticator(){
             protected  PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication("amankansal.india@gmail.com","hahahaha");
+                return new PasswordAuthentication("amankansal.india@gmail.com",password);
             }
                 }
                 );
@@ -38,10 +44,26 @@ public class SendMail{
             message.setFrom(new InternetAddress(from));
 
             message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));
+            message.addRecipient(Message.RecipientType.TO,new InternetAddress("koderakan123@gmail.com"));
+
 
             message.setSubject("This is the Subject Line!");
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText("This is message body");
 
-            message.setText("This is actual message");
+            Multipart multipart=new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+
+            messageBodyPart=new MimeBodyPart();
+            String fname="/home/aman/IdeaProjects/LearnJava/src/ns.txt";
+            DataSource source=new FileDataSource(fname);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(fname);
+            multipart.addBodyPart(messageBodyPart);
+
+
+            message.setContent(multipart);
+//            message.setText("This is actual message");
 
             Transport.send(message);
             System.out.println("Sent message successfully....");
